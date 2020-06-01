@@ -1,0 +1,12 @@
+--- 
+passengerapi_tests: 
+  image: node:latest
+  script: 
+    - "npm install yarn"
+    - "yarn"
+    - "npm run test-local"
+  stage: test
+  only:
+  - merge_requests
+stages: 
+  - test
