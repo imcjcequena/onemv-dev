@@ -26,10 +26,10 @@ pipeline {
     			cobertura coberturaReportFile: 'coverage/cobertura-coverage.xml'
 			}
 		}
-		post {
-      		always {
-        		junit 'test-results.xml'
-      		}
-  	    } 
+		stage('Publish test results') {
+			steps {
+      			junit 'test-results.xml'
+			}
+ 		 } 
 	}
 }
