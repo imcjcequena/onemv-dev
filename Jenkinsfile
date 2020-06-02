@@ -21,7 +21,7 @@ pipeline {
 				}
 			}
 		}
-		stage ("Extract test results") {
+		stage("Extract test results") {
     		cobertura coberturaReportFile: 'coverage/cobertura-coverage.xml'
 		}
 	}
