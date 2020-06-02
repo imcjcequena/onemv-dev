@@ -3,8 +3,10 @@ pipeline {
 	stages {
 		stage("ConfigFile Plugin") {
 			steps {
-				configFileProvider([configFile(fileId: 'd77673ec-5452-4e66-9312-29bd66727fd3', targetLocation: '.env.example')]) 
+				configFileProvider([configFile(fileId: 'd77673ec-5452-4e66-9312-29bd66727fd3', targetLocation: '.env.example')]) { 
 				echo ' executing configfiles...'
+				sh 'cat .env.example'
+				}
 				
 			}
 		}
