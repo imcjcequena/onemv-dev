@@ -1,19 +1,19 @@
-FROM node
+# Base image
+FROM node:12.17.0-alpine3.10
 
-# Create app directory
-WORKDIR /usr/src/app
+# Creating a directory inside the base image and defining as the base directory
+WORKDIR /app
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-COPY package*.json /usr/src/app/
+# Copying the files of the root directory into the base directory
+ADD . /app
 
-RUN npm install
-# If you are building your code for production
-# RUN npm ci --only=production
+# Installing the project dependencies
+RUN npm install -y
+RUN npm install pm2 -g
+RUN yarn
 
-# Bundle app source
-COPY . .
+# Starting the pm2 process and keeping the docker container alive
+CMD ["pm2-runtime", "npm", "--", "start"]
 
+# Exposing the RestAPI port
 EXPOSE 4000
-CMD [ "npm", "start" ]
