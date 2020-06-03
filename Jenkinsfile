@@ -3,8 +3,8 @@ pipeline {
 	environment 
     {
         VERSION = 'latest'
-        PROJECT = 'tap_sample'
-        IMAGE = 'tap_sample:latest'
+        PROJECT = 'ccequena'
+        IMAGE = "$PROJECT:$VERSION"
         ECRURL = '708988062417.dkr.ecr.ap-southeast-2.amazonaws.com/ccequena'
         ECRCRED = 'ecr:ap-southeast-2:ccequena'
 	}
@@ -39,20 +39,7 @@ pipeline {
       			junit 'test-results.xml'
 			}
  		 }
-		stage('Build preparations') {
-            steps {
-                script {
-                    // calculate GIT lastest commit short-hash
-                    gitCommitHash = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
-                    shortCommitHash = gitCommitHash.take(7)
-                    // calculate a sample version tag
-                    VERSION = shortCommitHash
-                    // set the build display name
-                    currentBuild.displayName = "#${BUILD_ID}-${VERSION}"
-                    IMAGE = "$PROJECT:$VERSION"
-                }
-            }
-        }
+		
 		stage('Docker build') {
             steps {
                 script {
