@@ -5,7 +5,7 @@ pipeline {
         VERSION = 'latest'
         PROJECT = 'ccequena'
         IMAGE = "$PROJECT:$VERSION"
-        ECRURL = '708988062417.dkr.ecr.ap-southeast-2.amazonaws.com/ccequena'
+        ECRURL = 'https://708988062417.dkr.ecr.ap-southeast-2.amazonaws.com/ccequena'
         ECRCRED = 'ecr:ap-southeast-2:ccequena'
 	}
 	stages {
