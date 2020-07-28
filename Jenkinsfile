@@ -65,10 +65,7 @@ pipeline {
                 }
             }
         }
-
-		
-      
-	
+	}
 		post {
         	always {
             // make sure that the Docker image is removed
@@ -76,5 +73,5 @@ pipeline {
         	}
     	}
 		
-	}
+	
 }
