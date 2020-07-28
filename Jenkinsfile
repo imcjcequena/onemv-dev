@@ -71,7 +71,7 @@ pipeline {
         // with the remoteImageTag (imageTag-BUILD_NUMBER)
         steps {
            script {                                                                    \
-         	 sed -e  s;%BUILD_TAG%;$IMAGE;g                             \
+         	 sed -e  's;%BUILD_TAG%;$IMAGE;g'                             \
                   aws/task-definition.json >                                      \
                   aws/task-definition-$IMAGE.json                      \
 		
