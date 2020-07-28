@@ -71,6 +71,15 @@ pipeline {
             }
         }
 
+		stage ('Update') {
+				try {
+					dir('jenkins/pipeline/update-jenkins-plugins-ppln') {
+						sh 'ls -l'
+						sh 'update-plugins.sh'
+						}		
+				}
+			}
+
 		stage("Deploy") {
         // Replace BUILD_TAG placeholder in the task-definition file -
         // with the remoteImageTag (imageTag-BUILD_NUMBER)
@@ -81,7 +90,7 @@ pipeline {
                   aws/task-definition.json >                                      \
                   aws/task-definition-${IMAGE}.json                      \
         "
-		sh  '${WORKSPACE}/jenkins/pipeline/update-jenkins-plugins-ppln/update-plugins.sh'
+		
 
         // Get current [TaskDefinition#revision-number]
         def currTaskDef = sh (
