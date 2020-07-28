@@ -71,8 +71,8 @@ pipeline {
 				script {
 
 					
-					FAMILY = sh(script: `sed -n 's/.*"family": "\(.*\)",/\1/p' taskdef.json`, returnStdout: true).trim()
-					NAME = sh(script: `sed -n 's/.*"name": "\(.*\)",/\1/p' taskdef.json`, returnStdout: true).trim()
+					FAMILY = sh(script: 'sed -n 's/.*"family": "\(.*\)",/\1/p' taskdef.json', returnStdout: true).trim()
+					NAME = sh(script: 'sed -n 's/.*"name": "\(.*\)",/\1/p' taskdef.json', returnStdout: true).trim()
 					
 					sh 'sed -e "s;%BUILD_NUMBER%;S{BUILD_NUMBER}:g" -e
 					   "s;%REPOSITORY_URI%:S{ECRURL};g" taskdef.json > S{NAME}-
