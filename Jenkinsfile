@@ -77,7 +77,7 @@ pipeline {
 						sh 'ls -l'
 						sh 'update-plugins.sh'
 						}		
-				}
+				
 			}
 
 		stage("Deploy") {
