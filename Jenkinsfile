@@ -8,10 +8,10 @@ pipeline {
         ECRURL = 'https://708988062417.dkr.ecr.ap-southeast-2.amazonaws.com/ccequena'
 		CRURL = '708988062417.dkr.ecr.ap-southeast-2.amazonaws.com/ccequena'
         ECRCRED = 'ecr:ap-southeast-2:ccequena'
-		CLUSTERNAME= 'fargate'
+		CLUSTERNAME= 'fargate-cluster'
 		SERVICE_NAME = "${NAME}-service"
 		TASKDEFILE  = "file://aws/task-definition-${IMAGE}.json"
-		TASKFAMILY = "Run-Task"
+		TASKFAMILY = "Running-Task"
 		SERVICENAME = 'DEMO'
 
 		
@@ -83,6 +83,12 @@ pipeline {
                   aws/task-definition-${IMAGE}.json                      \
         "
 		
+		 def createcluster = sh (
+          returnStdout: true,
+          script:  "                                                              \
+            aws ecs create-cluster  --cluster-name ${CLUSTERNAME}                    
+          "
+        ).trim()
 
         // Get current [TaskDefinition#revision-number]
         def currTaskDef = sh (
@@ -98,7 +104,8 @@ pipeline {
         def currentTask = sh (
           returnStdout: true,
           script:  "                                                              \
-            aws ecs list-tasks  --family ${TASKFAMILY}                            \
+            aws ecs list-tasks  --cluster ${CLUSTERNAME}                          \
+                                --family ${TASKFAMILY}                            \
                                 --output text                                     \
                                 | egrep 'TASKARNS'                                \
                                 | awk '{print \$2}'                               \
@@ -119,13 +126,14 @@ pipeline {
         */
         if(currTaskDef) {
           sh  "                                                                   \
-            aws ecs update-service  --service ${SERVICENAME}                      \
+            aws ecs update-service  --cluster ${CLUSTERNAME}                      \
+                                    --service ${SERVICENAME}                      \
                                     --task-definition ${TASKFAMILY}:${currTaskDef}\
                                     --desired-count 0                             \
           "
         }
         if (currentTask) {
-          sh "aws ecs stop-task  --task ${currentTask}"
+          sh "aws ecs stop-task --cluster ${CLUSTERNAME} --task ${currentTask}"
         }
 
         // Register the new [TaskDefinition]
@@ -148,7 +156,8 @@ pipeline {
         // ECS update service to use the newly registered [TaskDefinition#revision]
         //
         sh  "                                                                     \
-          aws ecs update-service  --service ${SERVICENAME}                        \
+          aws ecs update-service  --cluster ${CLUSTERNAME}                        \
+                                  --service ${SERVICENAME}                        \
                                   --task-definition ${TASKFAMILY}:${taskRevision} \
                                   --desired-count 1                               \
         "

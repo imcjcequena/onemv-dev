@@ -1,5 +1,6 @@
 {
   "family": "frontend",
+  "networkMode": "awsvpc",
   "containerDefinitions": [
     {
       "image": "708988062417.dkr.ecr.ap-southeast-2.amazonaws.com/ccequena:SAMPLES_85",
@@ -20,5 +21,6 @@
         }
       ]
     }
-  ]
+  ],
+  "requiresCompatibilities": ["FARGATE"]
 }
