@@ -74,26 +74,17 @@ pipeline {
 				
 					
 					sh 'sed -e "s;%BUILD_NUMBER%;S{BUILD_NUMBER}:g" -e "s;%REPOSITORY_URI%:("$ECRURL"};g" taskdef.json > ${NAME}-SAMPLES_${BUILD_NUMBER}.json'
-					sh 'aws ecs register-task-definition --family ${FAMILY} --cli-input-json file://${WORKSPACE}${NAME}-
-						SAMPLES_${BUILD_NUMBER}.json --region ${REGION}'
-					SERVICES = sh(script: 'aws ecs describe-services --services ${SERVICE_NAME} --cluster {CLUSTER} --region
-							  ${REGION} | jq.failures[]', returnStdout: true).trim()
-					REVISION= sh(script: 'aws ecs describe-task-definition --task-definition ${NAME} --region ${REGION}
-							 | jq.taskDefinition.revision', returnStdout: true).trim()
+					sh 'aws ecs register-task-definition --family ${FAMILY} --cli-input-json file://${WORKSPACE}${NAME}-SAMPLES_${BUILD_NUMBER}.json --region ${REGION}'
+					SERVICES = sh(script: 'aws ecs describe-services --services ${SERVICE_NAME} --cluster {CLUSTER} --region ${REGION} | jq.failures[]', returnStdout: true).trim()
+					REVISION= sh(script: 'aws ecs describe-task-definition --task-definition ${NAME} --region ${REGION} | jq.taskDefinition.revision', returnStdout: true).trim()
 
-					if["$SERVICES" == ""]; then
-						echo “entered existing service"
-						DESIRED_COUNT = sh(script: 'aws ecs describe-services --services ${SERVICE_NAME} --cluster
-						${CLUSTER} --region ${REGION}] jq.services[].desiredCount' , returnStdout: true).trim()
-					if[ ${DESIRED_COUNT} = "0"]; then
-						DESIRED_COUNT= "1"
+					if["$SERVICES" == ""]; then DESIRED_COUNT = sh(script: 'aws ecs describe-services --services ${SERVICE_NAME} --cluster ${CLUSTER} --region ${REGION}] jq.services[].desiredCount' , returnStdout: true).trim()
+					if[ ${DESIRED_COUNT} = "0"]; then DESIRED_COUNT= "1"
 					
 					fi
-						sh 'aws ecs update-service --cluster ${CLUSTER} --region ${REGION} --service ${SERVICE_NAME} 
-						--task-definition ${FAMILY}${REVISION} --desired-count ${DESIRED_COUNT}'
+						sh 'aws ecs update-service --cluster ${CLUSTER} --region ${REGION} --service ${SERVICE_NAME} --task-definition ${FAMILY}${REVISION} --desired-count ${DESIRED_COUNT}'
 					else
-						sh 'aws ecs create-service --service-name ${SERVICE_NAME} --launch-type FARGATE --desired-count
-						1 --task-definition ${FAMILY} --cluster ${CLUSTER} --region ${REGION}'
+						sh 'aws ecs create-service --service-name ${SERVICE_NAME} --launch-type FARGATE --desired-count 1 --task-definition ${FAMILY} --cluster ${CLUSTER} --region ${REGION}'
 					fi
 				}
 			}
