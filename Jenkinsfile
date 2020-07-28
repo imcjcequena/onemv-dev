@@ -7,11 +7,14 @@ pipeline {
 		IMAGE = "$PROJECT:$VERSION"
         ECRURL = 'https://708988062417.dkr.ecr.ap-southeast-2.amazonaws.com/ccequena'
         ECRCRED = 'ecr:ap-southeast-2:ccequena'
-		CLUSTER= 'fargate'
+		CLUSTERNAME= 'fargate'
 		SERVICE_NAME = "${NAME}-service"
 		PATH = "$PATH:/usr/local/bin; export PATH"
-		FAMILY = "file://aws/task-definition-("$IMAGE").json"
-		NAME = "file://aws/task-definition-("$IMAGE").json"
+		TASKDEFILE  = "file://aws/task-definition-("$IMAGE").json"
+		TASKFAMILY = "Task-definition_V${BUILD_NUMBER}"
+		SERVICENAME = 'DEMO'
+
+		
 		
 	}
 	stages {
@@ -68,31 +71,93 @@ pipeline {
             }
         }
 
-		stage('Deploy') {
-			steps {
-				script {
-				
-					SERVICES = sh(script: 'aws ecs describe-services --services ${SERVICE_NAME} --cluster {CLUSTER} --region ${REGION} | jq.failures[]', returnStdout: true).trim()
-					REVISION= sh(script: 'aws ecs describe-task-definition --task-definition ${NAME} --region ${REGION} | jq.taskDefinition.revision', returnStdout: true).trim()
-					sh 'sed -e "s;%BUILD_NUMBER%;S{BUILD_NUMBER}:g" -e "s;%REPOSITORY_URI%:("$ECRURL"};g" taskdef.json > ${NAME}-SAMPLES_${BUILD_NUMBER}.json'
-					sh 'aws ecs register-task-definition --family ${FAMILY} --cli-input-json file://${WORKSPACE}${NAME}-SAMPLES_${BUILD_NUMBER}.json --region ${REGION}'
-					
+		stage("Deploy") {
+        // Replace BUILD_TAG placeholder in the task-definition file -
+        // with the remoteImageTag (imageTag-BUILD_NUMBER)
+		steps {
+                script {
+        sh  "                                                                     \
+          sed -e  's;%BUILD_TAG%;${IMAGE};g'                             \
+                  aws/task-definition.json >                                      \
+                  aws/task-definition-${IMAGE}.json                      \
+        "
 
-					if (${SERVICES} == "") {
-				    DESIRED_COUNT = sh(script: 'aws ecs describe-services --services ${SERVICE_NAME} --cluster ${CLUSTER} --region ${REGION} | jq.services[].desiredCount' , returnStdout: true).trim()
-					}
-					if (${DESIRED_COUNT} = 0) {
-					DESIRED_COUNT = sh(script: 1, returnStdout: true).trim()
-					}
-					fi
-						sh 'aws ecs update-service --cluster ${CLUSTER} --region ${REGION} --service ${SERVICE_NAME} --task-definition ${FAMILY}${REVISION} --desired-count ${DESIRED_COUNT}'
-					else
-						sh 'aws ecs create-service --service-name ${SERVICE_NAME} --launch-type FARGATE --desired-count 1 --task-definition ${FAMILY} --cluster ${CLUSTER} --region ${REGION}'
-					fi
+        // Get current [TaskDefinition#revision-number]
+        def currTaskDef = sh (
+          returnStdout: true,
+          script:  "                                                              \
+            aws ecs describe-task-definition  --task-definition ${TASKFAMILY}     \
+                                              | egrep 'revision'                  \
+                                              | tr ',' ' '                        \
+                                              | awk '{print \$2}'                 \
+          "
+        ).trim()
+
+        def currentTask = sh (
+          returnStdout: true,
+          script:  "                                                              \
+            aws ecs list-tasks  --cluster ${CLUSTERNAME}                          \
+                                --family ${TASKFAMILY}                            \
+                                --output text                                     \
+                                | egrep 'TASKARNS'                                \
+                                | awk '{print \$2}'                               \
+          "
+        ).trim()
+
+        /*
+        / Scale down the service
+        /   Note: specifiying desired-count of a task-definition in a service -
+        /   should be fine for scaling down the service, and starting a new task,
+        /   but due to the limited resources (Only one VM instance) is running
+        /   there will be a problem where one container is already running/VM,
+        /   and using a port(80/443), then when trying to update the service -
+        /   with a new task, it will complaine as the port is already being used,
+        /   as long as scaling down the service/starting new task run simulatenously
+        /   and it is very likely that starting task will run before the scaling down service finish
+        /   so.. we need to manually stop the task via aws ecs stop-task.
+        */
+        if(currTaskDef) {
+          sh  "                                                                   \
+            aws ecs update-service  --cluster ${CLUSTERNAME}                      \
+                                    --service ${SERVICENAME}                      \
+                                    --task-definition ${TASKFAMILY}:${currTaskDef}\
+                                    --desired-count 0                             \
+          "
+        }
+        if (currentTask) {
+          sh "aws ecs stop-task --cluster ${CLUSTERNAME} --task ${currentTask}"
+        }
+
+        // Register the new [TaskDefinition]
+        sh  "                                                                     \
+          aws ecs register-task-definition  --family ${TASKFAMILY}                \
+                                            --cli-input-json ${TASKDEFILE}        \
+        "
+
+        // Get the last registered [TaskDefinition#revision]
+        def taskRevision = sh (
+          returnStdout: true,
+          script:  "                                                              \
+            aws ecs describe-task-definition  --task-definition ${TASKFAMILY}     \
+                                              | egrep 'revision'                  \
+                                              | tr ',' ' '                        \
+                                              | awk '{print \$2}'                 \
+          "
+        ).trim()
+
+        // ECS update service to use the newly registered [TaskDefinition#revision]
+        //
+        sh  "                                                                     \
+          aws ecs update-service  --cluster ${CLUSTERNAME}                        \
+                                  --service ${SERVICENAME}                        \
+                                  --task-definition ${TASKFAMILY}:${taskRevision} \
+                                  --desired-count 1                               \
+        "
 				}
-			}
 		}
+      }
 	}
+
 		post {
         	always {
             // make sure that the Docker image is removed
