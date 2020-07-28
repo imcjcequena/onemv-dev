@@ -79,6 +79,8 @@ pipeline {
 				
 
         // Get current [TaskDefinition#revision-number]
+		steps {
+           script { 
         def currTaskDef = sh (
           returnStdout: true,
           script:  "                                                              \
@@ -88,7 +90,11 @@ pipeline {
                                               | awk '{print \$2}'                 \
           "
         ).trim()
-				
+		   }
+		}
+
+		steps {
+           script { 	
         def currentTask = sh (
           returnStdout: true,
           script:  "                                                              \
@@ -99,7 +105,8 @@ pipeline {
                                 | awk '{print \$2}'                               \
           "
         ).trim()
-		
+		   }
+		}
         /*
         / Scale down the service
         /   Note: specifiying desired-count of a task-definition in a service -
@@ -113,6 +120,8 @@ pipeline {
         /   so.. we need to manually stop the task via aws ecs stop-task.
         */
 		
+		steps {
+           script { 
         if(currTaskDef) {
           sh  "                                                                   \
             aws ecs update-service  --cluster $CLUSTER                      \
@@ -124,16 +133,19 @@ pipeline {
         if (currentTask) {
           sh "aws ecs stop-task --cluster $CLUSTER --task $TASK"
         }
-		
+		 
 
         // Register the new [TaskDefinition]
         sh  "                                                                     \
           aws ecs register-task-definition  --family $TASK                \
                                             --cli-input-json $TASKFILE        \
         "
-		
+		  }
+		}
 		
         // Get the last registered [TaskDefinition#revision]
+		steps {
+           script {
         def taskRevision = sh (
           returnStdout: true,
           script:  "                                                              \
@@ -153,7 +165,8 @@ pipeline {
                                   --task-definition $TASK:${taskRevision} \
                                   --desired-count 1                               \
         "
-		
+		   }
+		}
 		}
 				}
 		}
