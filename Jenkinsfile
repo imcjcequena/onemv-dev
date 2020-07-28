@@ -4,13 +4,10 @@ pipeline {
     {
         VERSION = "SAMPLES_${BUILD_NUMBER}"
         PROJECT = 'ccequena'
-		TASK = 'Dev'
-        IMAGE = "$PROJECT:$VERSION"
+		IMAGE = "$PROJECT:$VERSION"
         ECRURL = 'https://708988062417.dkr.ecr.ap-southeast-2.amazonaws.com/ccequena'
         ECRCRED = 'ecr:ap-southeast-2:ccequena'
-		CLUSTER = "CUST_${BUILD_NUMBER}"
-		SERVICE = "SERVICE_${BUILD_NUMBER}"
-		TASKFILE = "file://aws/task-definition-$IMAGE.json"
+		
 	}
 	stages {
 		stage("ConfigFile Plugin") {
