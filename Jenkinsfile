@@ -92,8 +92,7 @@ pipeline {
           script:  "                                                              \
             aws ecs create-service  --task-definition ${TASKFAMILY}     \
                                     --cluster ${CLUSTERNAME}                 \
-                                    --service-name ${SERVICENAME}                      \
-                                   
+                                    --service-name ${SERVICENAME}                      \                         
           "
         ).trim()
 
