@@ -60,7 +60,7 @@ pipeline {
                     // Push the Docker image to ECR
                     docker.withRegistry(ECRURL, ECRCRED)
                     {
-                        docker.image(IMAGE).push()
+                        docker.image($IMAGE).push()
                     }
                 }
             }
