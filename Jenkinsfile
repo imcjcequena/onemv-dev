@@ -10,7 +10,7 @@ pipeline {
 		CLUSTERNAME= 'fargate'
 		SERVICE_NAME = "${NAME}-service"
 		PATH = "$PATH:/usr/local/bin; export PATH"
-		TASKDEFILE  = "file://aws/task-definition-$IMAGE.json"
+		TASKDEFILE  = "file://aws/task-definition-${IMAGE}.json"
 		TASKFAMILY = "Task-definition_V${BUILD_NUMBER}"
 		SERVICENAME = 'DEMO'
 
