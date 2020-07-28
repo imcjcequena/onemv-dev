@@ -66,14 +66,15 @@ pipeline {
             }
         }
 
-		 stage("Deploy") {
+		stage("Deploy") {
         // Replace BUILD_TAG placeholder in the task-definition file -
         // with the remoteImageTag (imageTag-BUILD_NUMBER)
-        sh  "                                                                     \
-          sed -e  's;%BUILD_TAG%;$IMAGE;g'                             \
+        steps {
+           script {                                                                    \
+         	 sed -e  s;%BUILD_TAG%;$IMAGE;g                             \
                   aws/task-definition.json >                                      \
                   aws/task-definition-$IMAGE.json                      \
-        "
+		
 
         // Get current [TaskDefinition#revision-number]
         def currTaskDef = sh (
@@ -146,6 +147,8 @@ pipeline {
                                   --task-definition $TASK:${taskRevision} \
                                   --desired-count 1                               \
         "
+				}
+		}
       }
 	}
 		post {
