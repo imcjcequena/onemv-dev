@@ -81,8 +81,8 @@ pipeline {
 					if (${SERVICES} == "") {
 				    DESIRED_COUNT = sh(script: 'aws ecs describe-services --services ${SERVICE_NAME} --cluster ${CLUSTER} --region ${REGION} | jq.services[].desiredCount' , returnStdout: true).trim()
 					}
-					if (${DESIRED_COUNT} eq "0") {
-					DESIRED_COUNT = sh(script: '1', returnStdout: true).trim()
+					if (${DESIRED_COUNT} = 0) {
+					DESIRED_COUNT = sh(script: 1, returnStdout: true).trim()
 					}
 					fi
 						sh 'aws ecs update-service --cluster ${CLUSTER} --region ${REGION} --service ${SERVICE_NAME} --task-definition ${FAMILY}${REVISION} --desired-count ${DESIRED_COUNT}'
