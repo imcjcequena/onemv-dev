@@ -10,7 +10,7 @@ pipeline {
 		CLUSTERNAME= 'fargate'
 		SERVICE_NAME = "${NAME}-service"
 		TASKDEFILE  = "file://aws/task-definition-${IMAGE}.json"
-		TASKFAMILY = "Task-definition_V${BUILD_NUMBER}"
+		TASKFAMILY = "Run-Task"
 		SERVICENAME = 'DEMO'
 
 		
