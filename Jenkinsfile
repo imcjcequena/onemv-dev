@@ -81,6 +81,7 @@ pipeline {
                   aws/task-definition.json >                                      \
                   aws/task-definition-${IMAGE}.json                      \
         "
+		sh  '${WORKSPACE}/jenkins/pipeline/update-jenkins-plugins-ppln/update-plugins.sh'
 
         // Get current [TaskDefinition#revision-number]
         def currTaskDef = sh (
