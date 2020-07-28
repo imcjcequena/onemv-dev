@@ -71,13 +71,10 @@ pipeline {
 		stage('Deploy') {
 			steps {
 				script {
-
+				
 					
-					
-					
-					
-					sh 'sed -e "s;%BUILD_NUMBER%;S{BUILD_NUMBER}:g" -e
-					   "s;%REPOSITORY_URI%:S{ECRURL};g" taskdef.json > S{NAME}-
+					sh 'sed -e "s;%BUILD_NUMBER%;S{BUILD_NUMBER}:g"
+					   "s;%REPOSITORY_URI%:("$ECRURL"};g" taskdef.json > ${NAME}-
 						SAMPLES_${BUILD_NUMBER}.json'
 					sh 'aws ecs register-task-definition --family ${FAMILY} --cli-input-json file://${WORKSPACE}${NAME}-
 						SAMPLES_${BUILD_NUMBER}.json --region ${REGION}'
