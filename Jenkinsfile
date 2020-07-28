@@ -70,10 +70,11 @@ pipeline {
         // Replace BUILD_TAG placeholder in the task-definition file -
         // with the remoteImageTag (imageTag-BUILD_NUMBER)
         steps {
-           script {                                                                    \
+           script {  
+			sh  "                                                                   \
          	 sed -e  's;%BUILD_TAG%;$IMAGE;g'                             \
                   aws/task-definition.json >                                      \
-                  aws/task-definition-$IMAGE.json                      \
+                  aws/task-definition-$IMAGE.json"                     \
 		
 
         // Get current [TaskDefinition#revision-number]
