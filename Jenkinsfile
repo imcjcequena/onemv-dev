@@ -89,12 +89,7 @@ pipeline {
 
 		 def createservice = sh (
           returnStdout: true,
-          script:  "                                                              \
-            aws ecs create-service  --task-definition ${TASKFAMILY}     \
-                                    --cluster ${CLUSTERNAME}                 \
-                                    --service-name ${SERVICENAME}                      \                         
-          "
-        ).trim()
+          script:  "aws ecs create-service  --task-definition ${TASKFAMILY} --cluster ${CLUSTERNAME} --service-name ${SERVICENAME}").trim()
 
         // Get current [TaskDefinition#revision-number]
         def currTaskDef = sh (
