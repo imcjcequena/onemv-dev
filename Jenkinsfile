@@ -60,7 +60,7 @@ pipeline {
                     // Push the Docker image to ECR
                     docker.withRegistry(ECRURL, ECRCRED)
                     {
-                        docker.image($IMAGE).push()
+                        docker.image(IMAGE).push()
                     }
                 }
             }
@@ -71,11 +71,10 @@ pipeline {
         // with the remoteImageTag (imageTag-BUILD_NUMBER)
         steps {
            script {  
-			sh  "                                                                   \
-         	 sed -e  's;%BUILD_TAG%;$IMAGE;g'                             \
+			sh  'sed -e  's;%BUILD_TAG%;$IMAGE;g'                             \
                   aws/task-definition.json >                                      \
-                  aws/task-definition-$IMAGE.json"                     \
-		
+                  aws/task-definition-$IMAGE.json'                       \
+				{
 
         // Get current [TaskDefinition#revision-number]
         def currTaskDef = sh (
@@ -87,7 +86,8 @@ pipeline {
                                               | awk '{print \$2}'                 \
           "
         ).trim()
-
+				}
+		{
         def currentTask = sh (
           returnStdout: true,
           script:  "                                                              \
@@ -98,7 +98,7 @@ pipeline {
                                 | awk '{print \$2}'                               \
           "
         ).trim()
-
+		}
         /*
         / Scale down the service
         /   Note: specifiying desired-count of a task-definition in a service -
@@ -111,6 +111,7 @@ pipeline {
         /   and it is very likely that starting task will run before the scaling down service finish
         /   so.. we need to manually stop the task via aws ecs stop-task.
         */
+		{
         if(currTaskDef) {
           sh  "                                                                   \
             aws ecs update-service  --cluster $CLUSTER                      \
@@ -122,13 +123,15 @@ pipeline {
         if (currentTask) {
           sh "aws ecs stop-task --cluster $CLUSTER --task $TASK"
         }
+		
 
         // Register the new [TaskDefinition]
         sh  "                                                                     \
           aws ecs register-task-definition  --family $TASK                \
                                             --cli-input-json $TASKFILE        \
         "
-
+		}
+		{
         // Get the last registered [TaskDefinition#revision]
         def taskRevision = sh (
           returnStdout: true,
@@ -139,20 +142,27 @@ pipeline {
                                               | awk '{print \$2}'                 \
           "
         ).trim()
-
+		}
         // ECS update service to use the newly registered [TaskDefinition#revision]
         //
+		{
         sh  "                                                                     \
           aws ecs update-service  --cluster $CLUSTER                        \
                                   --service $SERVICE                        \
                                   --task-definition $TASK:${taskRevision} \
                                   --desired-count 1                               \
         "
+		}
 				}
 		}
       }
 	}
-		
+		post {
+        	always {
+            // make sure that the Docker image is removed
+            sh "docker rmi $IMAGE | true"
+        	}
+    	}
 		
 	
 }
