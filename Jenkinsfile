@@ -75,7 +75,7 @@ pipeline {
                   aws/task-definition.json >                                      \
                   aws/task-definition-$IMAGE.json"   
 		                    }
-		             }                    \
+		                                 \
 				
 
         // Get current [TaskDefinition#revision-number]
@@ -154,6 +154,7 @@ pipeline {
                                   --desired-count 1                               \
         "
 		
+		}
 				}
 		}
       
