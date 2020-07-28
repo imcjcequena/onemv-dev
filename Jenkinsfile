@@ -73,9 +73,7 @@ pipeline {
 				script {
 				
 					
-					sh 'sed -e "s;%BUILD_NUMBER%;S{BUILD_NUMBER}:g"
-					   "s;%REPOSITORY_URI%:("$ECRURL"};g" taskdef.json > ${NAME}-
-						SAMPLES_${BUILD_NUMBER}.json'
+					sh 'sed -e "s;%BUILD_NUMBER%;S{BUILD_NUMBER}:g" -e "s;%REPOSITORY_URI%:("$ECRURL"};g" taskdef.json > ${NAME}-SAMPLES_${BUILD_NUMBER}.json'
 					sh 'aws ecs register-task-definition --family ${FAMILY} --cli-input-json file://${WORKSPACE}${NAME}-
 						SAMPLES_${BUILD_NUMBER}.json --region ${REGION}'
 					SERVICES = sh(script: 'aws ecs describe-services --services ${SERVICE_NAME} --cluster {CLUSTER} --region
