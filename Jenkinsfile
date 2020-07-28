@@ -98,8 +98,7 @@ pipeline {
         def currentTask = sh (
           returnStdout: true,
           script:  "                                                              \
-            aws ecs list-tasks  --cluster ${CLUSTERNAME}                          \
-                                --family ${TASKFAMILY}                            \
+            aws ecs list-tasks  --family ${TASKFAMILY}                            \
                                 --output text                                     \
                                 | egrep 'TASKARNS'                                \
                                 | awk '{print \$2}'                               \
@@ -120,14 +119,13 @@ pipeline {
         */
         if(currTaskDef) {
           sh  "                                                                   \
-            aws ecs update-service  --cluster ${CLUSTERNAME}                      \
-                                    --service ${SERVICENAME}                      \
+            aws ecs update-service  --service ${SERVICENAME}                      \
                                     --task-definition ${TASKFAMILY}:${currTaskDef}\
                                     --desired-count 0                             \
           "
         }
         if (currentTask) {
-          sh "aws ecs stop-task --cluster ${CLUSTERNAME} --task ${currentTask}"
+          sh "aws ecs stop-task  --task ${currentTask}"
         }
 
         // Register the new [TaskDefinition]
@@ -150,8 +148,7 @@ pipeline {
         // ECS update service to use the newly registered [TaskDefinition#revision]
         //
         sh  "                                                                     \
-          aws ecs update-service  --cluster ${CLUSTERNAME}                        \
-                                  --service ${SERVICENAME}                        \
+          aws ecs update-service  --service ${SERVICENAME}                        \
                                   --task-definition ${TASKFAMILY}:${taskRevision} \
                                   --desired-count 1                               \
         "
