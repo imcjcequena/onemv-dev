@@ -6,6 +6,7 @@ pipeline {
         PROJECT = 'ccequena'
 		IMAGE = "$PROJECT:$VERSION"
         ECRURL = 'https://708988062417.dkr.ecr.ap-southeast-2.amazonaws.com/ccequena'
+		CRURL = '708988062417.dkr.ecr.ap-southeast-2.amazonaws.com/ccequena'
         ECRCRED = 'ecr:ap-southeast-2:ccequena'
 		CLUSTERNAME= 'fargate'
 		SERVICE_NAME = "${NAME}-service"
@@ -163,7 +164,7 @@ pipeline {
         	always {
             // make sure that the Docker image is removed
             sh "docker rmi $IMAGE | true"
-			sh "docker rmi $ECRURL:$VERSION"
+			sh "docker rmi $CRURL:$VERSION | true"
         	}
     	}
 		
