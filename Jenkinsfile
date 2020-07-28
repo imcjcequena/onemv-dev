@@ -85,10 +85,7 @@ pipeline {
 		
 		 def createcluster = sh (
           returnStdout: true,
-          script:  "                                                              \
-            aws ecs create-cluster  --cluster-name ${CLUSTERNAME} \                    
-          "
-        ).trim()
+          script:  "aws ecs create-cluster  --cluster-name ${CLUSTERNAME}").trim()
 
         // Get current [TaskDefinition#revision-number]
         def currTaskDef = sh (
