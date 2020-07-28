@@ -2,7 +2,7 @@
   "family": "frontend",
   "containerDefinitions": [
     {
-      "image": "708988062417.dkr.ecr.ap-southeast-2.amazonaws.com/ccequena:SAMPLES_93",
+      "image": "708988062417.dkr.ecr.ap-southeast-2.amazonaws.com/ccequena:SAMPLES_94",
       "name": "frontend",
       "essential": true,
       "cpu": 100,

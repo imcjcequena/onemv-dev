@@ -13,6 +13,7 @@ pipeline {
 		TASKDEFILE  = "file://aws/task-definition-${IMAGE}.json"
 		TASKFAMILY = "Running-Task"
 		SERVICENAME = 'DEMO'
+		
 
 		
 		
@@ -89,7 +90,7 @@ pipeline {
 
 		 def createservice = sh (
           returnStdout: true,
-          script:  "aws ecs create-service  --task-definition ${TASKFAMILY} --cluster ${CLUSTERNAME} --service-name ${SERVICENAME}").trim()
+          script:  "aws ecs create-service --desired-count 1 --task-definition ${TASKFAMILY} --cluster ${CLUSTERNAME} --service-name ${SERVICENAME}").trim()
 
         // Get current [TaskDefinition#revision-number]
         def currTaskDef = sh (
