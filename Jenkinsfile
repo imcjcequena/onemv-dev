@@ -70,18 +70,7 @@ pipeline {
             }
         }
 
-		stage ('Update') {
-			try {
-				dir('jenkins/pipeline/update-jenkins-plugins-ppln') {
-					sh 'ls -l'
-					sh 'update-plugins.sh'
-				}
-				} catch (Exception e) {
-					echo "existing" 
-					}
-			
-		}
-		
+				
 		stage("Deploy") {
         // Replace BUILD_TAG placeholder in the task-definition file -
         // with the remoteImageTag (imageTag-BUILD_NUMBER)
