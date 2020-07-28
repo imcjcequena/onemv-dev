@@ -9,7 +9,6 @@ pipeline {
         ECRCRED = 'ecr:ap-southeast-2:ccequena'
 		CLUSTERNAME= 'fargate'
 		SERVICE_NAME = "${NAME}-service"
-		PATH = "$PATH:/usr/local/bin; export PATH"
 		TASKDEFILE  = "file://aws/task-definition-${IMAGE}.json"
 		TASKFAMILY = "Task-definition_V${BUILD_NUMBER}"
 		SERVICENAME = 'DEMO'
@@ -71,15 +70,7 @@ pipeline {
             }
         }
 
-		stage ('Update') {
-				try {
-					dir('jenkins/pipeline/update-jenkins-plugins-ppln') {
-						sh 'ls -l'
-						sh 'update-plugins.sh'
-						}		
-				
-			}
-
+		
 		stage("Deploy") {
         // Replace BUILD_TAG placeholder in the task-definition file -
         // with the remoteImageTag (imageTag-BUILD_NUMBER)
