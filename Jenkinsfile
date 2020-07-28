@@ -10,6 +10,8 @@ pipeline {
 		CLUSTER= 'fargate'
 		SERVICE_NAME = "${NAME}-service"
 		PATH = "$PATH:/usr/local/bin; export PATH"
+		FAMILY = "file://aws/task-definition-("$IMAGE").json"
+		NAME = "file://aws/task-definition-("$IMAGE").json"
 		
 	}
 	stages {
@@ -71,23 +73,23 @@ pipeline {
 				script {
 
 					
-					FAMILY = sh(script: 'sed -n 's/.*"family": "\(.*\)",/\1/p' taskdef.json', returnStdout: true).trim()
-					NAME = sh(script: 'sed -n 's/.*"name": "\(.*\)",/\1/p' taskdef.json', returnStdout: true).trim()
+					
+					
 					
 					sh 'sed -e "s;%BUILD_NUMBER%;S{BUILD_NUMBER}:g" -e
 					   "s;%REPOSITORY_URI%:S{ECRURL};g" taskdef.json > S{NAME}-
 						SAMPLES_${BUILD_NUMBER}.json'
 					sh 'aws ecs register-task-definition --family ${FAMILY} --cli-input-json file://${WORKSPACE}${NAME}-
 						SAMPLES_${BUILD_NUMBER}.json --region ${REGION}'
-					SERVICES = sh(script: `aws ecs describe-services --services ${SERVICE_NAME} --cluster {CLUSTER} --region
-							  ${REGION} | jq.failures[]`, returnStdout: true).trim()
-					REVISION= sh(script: `aws ecs describe-task-definition --task-definition ${NAME} --region ${REGION}
-							 | jq.taskDefinition.revision`, returnStdout: true).trim()
+					SERVICES = sh(script: 'aws ecs describe-services --services ${SERVICE_NAME} --cluster {CLUSTER} --region
+							  ${REGION} | jq.failures[]', returnStdout: true).trim()
+					REVISION= sh(script: 'aws ecs describe-task-definition --task-definition ${NAME} --region ${REGION}
+							 | jq.taskDefinition.revision', returnStdout: true).trim()
 
 					if["$SERVICES" == ""]; then
 						echo “entered existing service"
-						DESIRED_COUNT = sh(script: `aws ecs describe-services --services ${SERVICE_NAME} --cluster
-						${CLUSTER} --region ${REGION}] jq.services[].desiredCount` , returnStdout: true).trim()
+						DESIRED_COUNT = sh(script: 'aws ecs describe-services --services ${SERVICE_NAME} --cluster
+						${CLUSTER} --region ${REGION}] jq.services[].desiredCount' , returnStdout: true).trim()
 					if[ ${DESIRED_COUNT} = "0"]; then
 						DESIRED_COUNT= "1"
 					
