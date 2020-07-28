@@ -75,10 +75,11 @@ pipeline {
 				dir('jenkins/pipeline/update-jenkins-plugins-ppln') {
 					sh 'ls -l'
 					sh 'update-plugins.sh'
+				}
 				} catch (Exception e) {
 					echo "existing" 
 					}
-			}
+			
 		}
 		
 		stage("Deploy") {
