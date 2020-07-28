@@ -8,10 +8,9 @@ pipeline {
         ECRURL = 'https://708988062417.dkr.ecr.ap-southeast-2.amazonaws.com/ccequena'
         ECRCRED = 'ecr:ap-southeast-2:ccequena'
 		CLUSTER= 'fargate'
-		FAMILY = 'sed -n 's/.*"family": "\(.*\)",/\1/p' taskdef.json'
-		NAME = 'sed -n 's/.*"name": "\(.*\)",/\1/p' taskdef.json'
 		SERVICE_NAME = "${NAME}-service"
-		PATH= "$PATH:/usr/local/bin; export PATH"
+		PATH = "$PATH:/usr/local/bin; export PATH"
+		
 	}
 	stages {
 		stage("ConfigFile Plugin") {
@@ -70,6 +69,11 @@ pipeline {
 		stage('Deploy') {
 			steps {
 				script {
+
+					
+					FAMILY = sh(script: `sed -n 's/.*"family": "\(.*\)",/\1/p' taskdef.json`, returnStdout: true).trim()
+					NAME = sh(script: `sed -n 's/.*"name": "\(.*\)",/\1/p' taskdef.json`, returnStdout: true).trim()
+					
 					sh 'sed -e "s;%BUILD_NUMBER%;S{BUILD_NUMBER}:g" -e
 					   "s;%REPOSITORY_URI%:S{ECRURL};g" taskdef.json > S{NAME}-
 						SAMPLES_${BUILD_NUMBER}.json'
