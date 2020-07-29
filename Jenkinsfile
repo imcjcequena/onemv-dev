@@ -142,7 +142,7 @@ pipeline {
           aws ecs register-task-definition  --family ${TASKFAMILY}                \
                                             --cli-input-json ${TASKDEFILE}        \
         "
-        sh  "
+        sh  "                                                                     \
           aws ecs create-service --desired-count 1 --task-definition ${TASKFAMILY}\
                                   --cluster ${CLUSTERNAME}                        \ 
                                   --service-name ${SERVICENAME}                   \
