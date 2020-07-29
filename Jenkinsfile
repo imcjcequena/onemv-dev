@@ -88,9 +88,7 @@ pipeline {
           returnStdout: true,
           script:  "aws ecs create-cluster  --cluster-name ${CLUSTERNAME}").trim()
 
-		 def createservice = sh (
-          returnStdout: true,
-          script:  "aws ecs create-service --desired-count 1 --task-definition ${TASKFAMILY} --cluster ${CLUSTERNAME} --service-name ${SERVICENAME}").trim()
+		 
 
         // Get current [TaskDefinition#revision-number]
         def currTaskDef = sh (
@@ -103,6 +101,10 @@ pipeline {
           "
         ).trim()
 
+        def createservice = sh (
+            returnStdout: true,
+            script:  "aws ecs create-service --desired-count 1 --task-definition ${TASKFAMILY} --cluster ${CLUSTERNAME} --service-name ${SERVICENAME}").trim()
+       
         def currentTask = sh (
           returnStdout: true,
           script:  "                                                              \
