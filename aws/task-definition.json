@@ -1,11 +1,11 @@
 {
   "family": "frontend",
+  "networkMode": "awsvpc",
   "containerDefinitions": [
     {
       "image": "708988062417.dkr.ecr.ap-southeast-2.amazonaws.com/BUILD_TAG",
       "name": "frontend",
       "essential": true,
-      "cpu": 100,
       "memoryReservation": 300,
       "portMappings": [
         {
@@ -20,5 +20,8 @@
         }
       ]
     }
-  ]
+  ],
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512"
 }

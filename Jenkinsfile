@@ -11,7 +11,7 @@ pipeline {
 		CLUSTERNAME= 'fargate-cluster'
 		SERVICE_NAME = "${NAME}-service"
 		TASKDEFILE  = "file://aws/task-definition-${IMAGE}.json"
-		TASKFAMILY = "Running-Task"
+		TASKFAMILY = "Fargate-Task"
 		SERVICENAME = 'DEMO'
 		
 
@@ -141,8 +141,9 @@ pipeline {
         sh  "                                                                     \
           aws ecs register-task-definition  --family ${TASKFAMILY}                \
                                             --cli-input-json ${TASKDEFILE}        \
+                                            --task-role-arn 'ecsTaskExecutionRole'\
         "
-        sh  "aws ecs create-service --launch-type EC2 --desired-count 0 --task-definition ${TASKFAMILY} --cluster ${CLUSTERNAME} --service-name ${SERVICENAME}"
+        sh  "aws ecs create-service --launch-type FARGATE --desired-count 0 --task-definition ${TASKFAMILY} --cluster ${CLUSTERNAME} --service-name ${SERVICENAME}"
         
        
         // Get the last registered [TaskDefinition#revision]
