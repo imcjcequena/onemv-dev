@@ -11,7 +11,7 @@ pipeline {
 		CLUSTERNAME= 'fargate-cluster'
 		SERVICE_NAME = "${NAME}-service"
 		TASKDEFILE  = "file://aws/task-definition-${IMAGE}.json"
-		TASKFAMILY = "Fargate-Task"
+		TASKFAMILY = "Task-Runner"
 		SERVICENAME = 'DEMO'
     TASKROLE = 'arn:aws:iam::708988062417:role/ecsTaskExecutionRole'
 		
