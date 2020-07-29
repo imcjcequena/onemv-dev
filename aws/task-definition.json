@@ -1,5 +1,6 @@
 {
   "family": "frontend",
+  "networkMode": "awsvpc",
   "containerDefinitions": [
     {
       "image": "708988062417.dkr.ecr.ap-southeast-2.amazonaws.com/BUILD_TAG",
@@ -22,5 +23,13 @@
   ],
   "requiresCompatibilities": ["FARGATE"],
   "cpu": "256",
-  "memory": "512"
+  "memory": "512",
+
+  "networkConfiguration": {
+    "awsvpcConfiguration": {
+      "assignPublicIp": "ENABLED",
+      "securityGroups": ["sg-081e3ba176562e2b9"],
+      "subnets": ["subnet-0837d4eadd365b9a7"]
+    }
+  }
 }
