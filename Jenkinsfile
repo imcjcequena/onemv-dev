@@ -13,6 +13,7 @@ pipeline {
 		TASKDEFILE  = "file://aws/task-definition-${IMAGE}.json"
 		TASKFAMILY = "Fargate-Task"
 		SERVICENAME = 'DEMO'
+    TASKROLE = 'arn:aws:iam::708988062417:role/ecsTaskExecutionRole'
 		
 
 		
@@ -141,7 +142,7 @@ pipeline {
         sh  "                                                                     \
           aws ecs register-task-definition  --family ${TASKFAMILY}                \
                                             --cli-input-json ${TASKDEFILE}        \
-                                            --task-role-arn 'ecsTaskExecutionRole'\
+                                            --execution-role-arn ${TASKROLE}      \
         "
         sh  "aws ecs create-service --launch-type FARGATE --desired-count 0 --task-definition ${TASKFAMILY} --cluster ${CLUSTERNAME} --service-name ${SERVICENAME}"
         
