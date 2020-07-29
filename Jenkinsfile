@@ -14,7 +14,7 @@ pipeline {
 		TASKFAMILY = "Task-Runner"
 		SERVICENAME = 'DEMO'
     TASKROLE = 'arn:aws:iam::708988062417:role/ecsTaskExecutionRole'
-    NETWORKCONF = "awsvpcConfiguration={subnets=["subnet-0837d4eadd365b9a7"],securityGroups=["sg-081e3ba176562e2b9"],assignPublicIp="ENABLED"}"
+    NETWORKCONF = "awsvpcConfiguration={subnets=[subnet-0837d4eadd365b9a7],securityGroups=[sg-081e3ba176562e2b9],assignPublicIp=ENABLED}"
 		
 
 		
