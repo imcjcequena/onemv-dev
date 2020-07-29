@@ -108,7 +108,7 @@ pipeline {
             aws ecs list-tasks  --cluster ${CLUSTERNAME}                          \
                                 --family ${TASKFAMILY}                            \
                                 --output text                                     \
-                                | egrep 'TASKARNS'                                \
+                                | egrep 'taskDefinitionArns'                      \
                                 | awk '{print \$2}'                               \
           "
         ).trim()
@@ -142,7 +142,7 @@ pipeline {
           aws ecs register-task-definition  --family ${TASKFAMILY}                \
                                             --cli-input-json ${TASKDEFILE}        \
         "
-        sh  "aws ecs create-service --launch-type FARGATE --desired-count 1 --task-definition ${TASKFAMILY} --cluster ${CLUSTERNAME} --service-name ${SERVICENAME}"
+        sh  "aws ecs create-service --launch-type EC2 --desired-count 0 --task-definition ${TASKFAMILY} --cluster ${CLUSTERNAME} --service-name ${SERVICENAME}"
         
        
         // Get the last registered [TaskDefinition#revision]
