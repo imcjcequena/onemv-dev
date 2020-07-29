@@ -15,10 +15,7 @@ pipeline {
 		SERVICENAME = 'DEMO'
     TASKROLE = 'arn:aws:iam::708988062417:role/ecsTaskExecutionRole'
     NETWORKCONF = "awsvpcConfiguration={subnets=[subnet-0837d4eadd365b9a7],securityGroups=[sg-081e3ba176562e2b9],assignPublicIp=ENABLED}"
-		
-
-		
-		
+			
 	}
 	stages {
 		stage("ConfigFile Plugin") {
@@ -140,14 +137,14 @@ pipeline {
         }
 
         // Register the new [TaskDefinition]
-        sh  "aws ecs create-service --launch-type FARGATE --network-configuration ${NETWORKCONF} --desired-count 0 --cluster ${CLUSTERNAME} --service-name ${SERVICENAME}"
+        
 
         sh  "                                                                     \
           aws ecs register-task-definition  --family ${TASKFAMILY}                \
                                             --cli-input-json ${TASKDEFILE}        \
                                             --execution-role-arn ${TASKROLE}      \
         "
-        
+        sh  "aws ecs create-service --launch-type FARGATE --network-configuration ${NETWORKCONF} --desired-count 0 --task-definition ${TASKFAMILY} --cluster ${CLUSTERNAME} --service-name ${SERVICENAME}"
         
        
         // Get the last registered [TaskDefinition#revision]
