@@ -2,7 +2,7 @@ pipeline {
 	agent any
 	environment 
     {
-        VERSION = "JENKINS_${BUILD_NUMBER}"
+        VERSION = "SAMPLEAPP_${BUILD_NUMBER}"
         PROJECT = 'ccequena'
 		IMAGE = "$PROJECT:$VERSION"
         ECRURL = 'https://708988062417.dkr.ecr.ap-southeast-2.amazonaws.com/ccequena'
