@@ -2,16 +2,16 @@ pipeline {
 	agent any
 	environment 
     {
-        VERSION = "SAMPLEAPP_${BUILD_NUMBER}"
-        PROJECT = 'ccequena'
+    VERSION = "SAMPLEAPP_${BUILD_NUMBER}"
+    PROJECT = 'ccequena'
 		IMAGE = "$PROJECT:$VERSION"
-        ECRURL = 'https://708988062417.dkr.ecr.ap-southeast-2.amazonaws.com/ccequena'
+    ECRURL = 'https://708988062417.dkr.ecr.ap-southeast-2.amazonaws.com/ccequena'
 		CRURL = '708988062417.dkr.ecr.ap-southeast-2.amazonaws.com/ccequena'
-        ECRCRED = 'ecr:ap-southeast-2:ccequena'
+    ECRCRED = 'ecr:ap-southeast-2:ccequena'
 		CLUSTERNAME= 'fargate-cluster'
 		SERVICE_NAME = "${NAME}-service"
 		TASKDEFILE  = "file://aws/task-definition-${IMAGE}.json"
-		TASKFAMILY = "Task-Runner"
+		TASKFAMILY = "Running-Task"
 		SERVICENAME = 'DEMO'
     TASKROLE = 'arn:aws:iam::708988062417:role/ecsTaskExecutionRole'
     NETWORKCONF = "awsvpcConfiguration={subnets=[subnet-0837d4eadd365b9a7],securityGroups=[sg-081e3ba176562e2b9],assignPublicIp=ENABLED}"
