@@ -28,7 +28,7 @@
     "moment": "^2.24.0",
     "mongoose": "^5.6.1",
     "morgan-body": "^2.4.7",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "querystring": "^0.2.0",
     "request": "^2.88.0",
     "winston": "^3.2.1",
